@@ -12,11 +12,14 @@ public class GameBoard : MonoBehaviour
     private Transform _ground;
     [SerializeField]
     private Tile _tilePrefab;
+
     private Tile[] _tiles;
-    private Vector2Int _size;
+    private Vector2Int _size;    
     private Queue<Tile> _searchFrontier { get; } = new();
     private List<Tile> _spawnPoints { get; } = new();
     private List<Tile> _destinationPoints { get; } = new();
+
+    public int SpawnPointsCount => _spawnPoints.Count;
     public void Initialize(Vector2Int size)
     {
         _size = size;
@@ -174,7 +177,10 @@ public class GameBoard : MonoBehaviour
         }
         return null;
     }
-
+    public Tile GetSpawnPoint(int index)
+    {
+        return _spawnPoints[index];
+    }
     public WallContent GetWall(Ray ray)
     {
         if (Physics.Raycast(ray, out RaycastHit hit))

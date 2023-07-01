@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class ArrowContent : Content<ArrowType>
+﻿public class ArrowContent : Content<ArrowType>
 {   
     public override void Recycle()
     {

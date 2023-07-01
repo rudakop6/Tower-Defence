@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class TileContentPool : Pool<TileContentType, TileContent, TileConteiner>
+public class TileContentPool : Pool<TileContentType, TileContent, TileContainer>
 {  
     protected override void InitPool()
     {
@@ -10,7 +10,7 @@ public class TileContentPool : Pool<TileContentType, TileContent, TileConteiner>
         {
             var conteiner = Instantiate(empty, transform, false);
             conteiner.name = obj.Type.ToString();
-            poolTiles[obj.Type] = new TileConteiner(conteiner.transform);
+            poolTiles[obj.Type] = new TileContainer(conteiner.transform);
             for (int i = 0; i < obj.StartCount; i++)
             {
                 var create = InstantiateObject(obj.Type, conteiner.transform);

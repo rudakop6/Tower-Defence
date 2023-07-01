@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class TowerPool : Pool<TowerType, TowerContent, TowerContainer>
+public class EnemyPool : Pool<EnemyType, EnemyContent, EnemyContainer>
 {
     protected override void InitPool()
     {
@@ -10,7 +9,7 @@ public class TowerPool : Pool<TowerType, TowerContent, TowerContainer>
         {
             var conteiner = Instantiate(empty, transform, false);
             conteiner.name = obj.Type.ToString();
-            poolTiles[obj.Type] = new TowerContainer(conteiner.transform);
+            poolTiles[obj.Type] = new EnemyContainer(conteiner.transform);
             for (int i = 0; i < obj.StartCount; i++)
             {
                 var create = InstantiateObject(obj.Type, conteiner.transform);

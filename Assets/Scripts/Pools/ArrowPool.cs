@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-public class ArrowPool : Pool<ArrowType, ArrowContent, ArrowConteiner>
+﻿using UnityEngine;
+
+public class ArrowPool : Pool<ArrowType, ArrowContent, ArrowContainer>
 {
     protected override void InitPool()
     {
@@ -10,7 +9,7 @@ public class ArrowPool : Pool<ArrowType, ArrowContent, ArrowConteiner>
         {
             var conteiner = Instantiate(empty, transform, false);
             conteiner.name = obj.Type.ToString();
-            poolTiles[obj.Type] = new ArrowConteiner(conteiner.transform);            
+            poolTiles[obj.Type] = new ArrowContainer(conteiner.transform);            
             for (int i = 0; i < obj.StartCount; i++)
             {
                 var create = InstantiateObject(obj.Type, conteiner.transform);

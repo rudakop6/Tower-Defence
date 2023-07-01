@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class TileContent : Content<TileContentType>
+﻿public class TileContent : Content<TileContentType>
 {
     public override void Recycle()
     {

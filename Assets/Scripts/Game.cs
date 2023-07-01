@@ -10,14 +10,17 @@ public class Game : MonoBehaviour
     private Camera _camera;
     [SerializeField]
     private Character _character;
-
+    [SerializeField]
+    private float _spawnSpeed;
+    private float _spawnProgress;
+    private EnemyCollection _enemies = new EnemyCollection();
     private Ray _touchRay => _camera.ScreenPointToRay(Input.mousePosition);
 
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
         Application.targetFrameRate = 120;
-        Cursor.visible = false;
+        //Cursor.visible = false;
         _board.Initialize(_boardSize);
     }
 
@@ -36,6 +39,22 @@ public class Game : MonoBehaviour
         }
 
         _character.Rotate(Input.GetAxis(Axis.MouseX), Input.GetAxis(Axis.MouseY));
+        
+        _spawnProgress += _spawnSpeed * Time.deltaTime;
+        while(_spawnProgress >= 1f)
+        {
+            _spawnProgress -= 1f;
+            SpawnEnemy();
+        }
+        _enemies.EnemiesUpdate();
+    }
+
+    private void SpawnEnemy()
+    {
+        Tile tile = _board.GetSpawnPoint(Random.Range(0, _board.SpawnPointsCount));
+        EnemyContent enemy = EnemyPool.Instance.GetContent(EnemyType.Sphere);
+        enemy.SpawnOn(tile);
+        _enemies.Add(enemy);
     }
 
     private void HandleTouch()

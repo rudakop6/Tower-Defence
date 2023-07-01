@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class Pool <K, T, P> : MonoBehaviour
     where K : Enum
     where T : Content<K>    
-    where P : PoolConteiner<T>
+    where P : PoolContainer<T>
 {
     public static Pool<K, T, P> Instance;
     private void Awake()
