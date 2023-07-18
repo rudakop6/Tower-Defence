@@ -36,6 +36,9 @@ public class Game : MonoBehaviour
             return;
         }
 
+        if (Time.timeScale == 0)
+            return;
+
         if (Input.GetMouseButtonDown(0))
         {
             if (Input.GetKey(KeyCode.LeftAlt))
