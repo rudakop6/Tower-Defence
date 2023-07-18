@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5046709488855689671}
   - component: {fileID: 6331685525746407538}
   - component: {fileID: 6126889839740683950}
-  - component: {fileID: -7312721325074801310}
+  - component: {fileID: 5464828467790242345}
   m_Layer: 0
   m_Name: WestNorthEast
   m_TagString: Untagged
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-7312721325074801310
+--- !u!114 &5464828467790242345
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,4 +97,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshFilter: {fileID: 6331685525746407538}
-  _type: 4
+  _type: 3

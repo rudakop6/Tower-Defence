@@ -2,8 +2,8 @@
 {
     public override void Recycle()
     {
-        TileContentPool.Instance.DestroyContent(this);
-        TowerContent.Recycle();
+        TowerContent = null;
+        BuildingPool.Instance.DestroyContent(this);        
     }
     private TowerContent _towerContent;
     public TowerContent TowerContent
@@ -11,14 +11,11 @@
         get => _towerContent;
         set
         {
-            if (_towerContent != null)
-                _towerContent.Recycle();
-
+            _towerContent?.Recycle();
             _towerContent = value;
-            if (_towerContent.Type != TowerType.Empty)
-            {
+
+            if(_towerContent != null)
                 _towerContent.transform.localPosition = Helper.GetPositionChildren(transform, _towerContent);
-            }
         }
     }
 }

@@ -27,7 +27,17 @@ public static class Helper
         float positionY = children.OffsetY;
         return parent.localPosition + new Vector3(0, parent.localScale.y + positionY, 0);
     }
+    //public static Vector3 GetPositionChildren(Transform parent, Content<Enum> children)
+    //{
+    //    float positionY = children.OffsetY;
+    //    return parent.localPosition + new Vector3(0, parent.localScale.y + positionY, 0);
+    //}
     public static Vector3 GetPositionChildren(Transform parent, Content<TowerType> children)
+    {
+        float positionY = children.OffsetY;
+        return parent.localPosition + new Vector3(0, parent.localScale.y + positionY, 0);
+    }
+    public static Vector3 GetPositionChildren(Transform parent, Content<ProjectionType> children)
     {
         float positionY = children.OffsetY;
         return parent.localPosition + new Vector3(0, parent.localScale.y + positionY, 0);

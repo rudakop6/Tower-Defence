@@ -26,15 +26,26 @@ public class EnemyContent : Content<EnemyType>
     public bool EnemyUpdate()
     {
         _progress += Time.deltaTime;
-        while(_progress >= 1)
+
+        if(_progress >= 0.5f)
+        {
+            _tileFrom.Lock = false;
+            _tileTo.Lock = true;
+            if (_tileTo.Content?.ContentType == ContentType.Projection)
+                _tileTo.Content = null;
+        }
+
+        while (_progress >= 1)
         {
             _tileFrom = _tileTo;
             _tileTo = GetTileTo(_tileTo);
+            
             if (_tileTo == null)
             {
                 Recycle();
                 return false;
             }
+
             _positionFrom = _positionTo;
             _positionTo = _tileTo.transform.localPosition;
             _progress -= 1f;

@@ -1,6 +1,5 @@
-﻿public enum TileContentType
+﻿public enum ProjectionType
 {
-    Empty,    
     Wall,
     Destination,
     SpawnPoint

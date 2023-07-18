@@ -14,7 +14,7 @@ public class GameBoard : MonoBehaviour
     private Tile _tilePrefab;
 
     private Tile[] _tiles;
-    private Vector2Int _size;    
+    private Vector2Int _size;
     private Queue<Tile> _searchFrontier { get; } = new();
     private List<Tile> _spawnPoints { get; } = new();
     private List<Tile> _destinationPoints { get; } = new();
@@ -33,135 +33,85 @@ public class GameBoard : MonoBehaviour
             {
                 Tile tile = _tiles[i] = Instantiate(_tilePrefab, transform, false);
                 tile.name = string.Format("Tile {0}", i);
+                tile.Identificator = i;
 
                 tile.transform.localPosition = new Vector3(x - offset.x, Constants.OffsetTileY, y - offset.y);
 
                 if (x > 0)
                     Tile.CreateEastWestLinks(tile, _tiles[i - 1]);
-
                 if (y > 0)
                     Tile.CreateNorthSouthLinks(tile, _tiles[i - size.x]);
-
-                tile.Content = TileContentPool.Instance.GetContent(TileContentType.Empty);
             }
         }
-        ToggleDestination(_tiles[_tiles.Length / 2]);
-        ToggleSpawnPoint(_tiles[0]);
+        CreateBuilding(_tiles[_tiles.Length / 2], TileContentType.Destination);
+        CreateBuilding(_tiles[0], TileContentType.SpawnPoint);
     }
 
-    private bool CheckPath()
+    public void CreateBuilding(Tile tile, TileContentType type)
     {
-        foreach (var tile in _tiles)
+        if (tile.Content == null || tile.Content.ContentType == ContentType.Projection)
         {
-            if (tile.Content.Type == TileContentType.Destination)
+            switch (type)
             {
-                tile.BecomeDestination();
-                _searchFrontier.Enqueue(tile);
+                case TileContentType.Wall:
+                    tile.Content = BuildingPool.Instance.GetContent(TileContentType.Wall);
+                    CalculatePaths();
+                    if (!CheckWall())
+                    {
+                        tile.Content = null;
+                    }
+                    break;
+                case TileContentType.SpawnPoint:
+                    if (tile.HasPath)
+                    {
+                        tile.Content = BuildingPool.Instance.GetContent(TileContentType.SpawnPoint);
+                        _spawnPoints.Add(tile);
+                    }
+                    break;
+                case TileContentType.Destination:
+                    tile.Content = BuildingPool.Instance.GetContent(TileContentType.Destination);
+                    _destinationPoints.Add(tile);
+                    break;
+
             }
-            else
+        }
+        else
+        {
+            switch (tile.Content.Type)
             {
-                tile.ClearPath();
+                case TileContentType.Wall:
+                    tile.Content = null;
+                    break;
+                case TileContentType.SpawnPoint:
+                    if (_spawnPoints.Count > 1)
+                    {
+                        tile.Content = null;
+                        _spawnPoints.Remove(tile);
+                        CalculatePaths();
+                    }
+                    return;
+                case TileContentType.Destination:
+                    if (_destinationPoints.Count > 1)
+                    {
+                        tile.Content = null;
+                        _destinationPoints.Remove(tile);
+                        CalculatePaths();
+                    }
+                    break;
             }
         }
-        return _searchFrontier.Any();
-    }
-    private bool FindPaths()
-    {
-        if (!CheckPath())
-            return false;
-
-        while (_searchFrontier.Any())
-        {
-            Tile tile = _searchFrontier.Dequeue();
-            if (tile != null)
-            {
-                _searchFrontier.Enqueue(tile.GrowPathNorth());
-                _searchFrontier.Enqueue(tile.GrowPathEast());
-                _searchFrontier.Enqueue(tile.GrowPathSouth());
-                _searchFrontier.Enqueue(tile.GrowPathWest());
-            }
-        }
-        foreach (var tile in _tiles)
-        {
-            tile.VisibleArrow = false;
-            tile.FindQuicklyPaths();
-        }
-
-        return true;
-    }
-
-    public void ToggleDestination(Tile tile)
-    {
-        switch (tile.Content.Type)
-        {
-            case TileContentType.Destination:
-                if (_destinationPoints.Count > 1)
-                {
-                    _destinationPoints.Remove(tile);
-                    tile.Content = TileContentPool.Instance.GetContent(TileContentType.Empty);
-                    CalculatePaths();
-                }
-                break;
-            case TileContentType.Empty:
-                tile.Content = TileContentPool.Instance.GetContent(TileContentType.Destination);
-                CalculatePaths();
-                _destinationPoints.Add(tile);
-                break;
-        }
-    }
-    public void ToggleSpawnPoint(Tile tile)
-    {
-        switch (tile.Content.Type)
-        {
-            case TileContentType.SpawnPoint:
-                if (_spawnPoints.Count > 1)
-                {
-                    tile.Content = TileContentPool.Instance.GetContent(TileContentType.Empty);
-                    _spawnPoints.Remove(tile);
-                    CalculatePaths();
-                }
-                break;
-            case TileContentType.Empty:
-                if (tile.HasPath)
-                {
-                    tile.Content = TileContentPool.Instance.GetContent(TileContentType.SpawnPoint);
-                    _spawnPoints.Add(tile);
-                    CalculatePaths();
-                }
-                break;
-        }
-    }
-    public void ToggleWall(Tile tile)
-    {
-        switch (tile.Content.Type)
-        {
-            case TileContentType.Wall:
-                tile.Content = TileContentPool.Instance.GetContent(TileContentType.Empty);
-                CalculatePaths();
-                break;
-            case TileContentType.Empty:
-                tile.Content = TileContentPool.Instance.GetContent(TileContentType.Wall);
-                CalculatePaths();
-                if (!CheckWall())
-                {
-                    tile.Content = TileContentPool.Instance.GetContent(TileContentType.Empty);
-                    CalculatePaths();
-                }
-                break;
-        }
+        CalculatePaths();
     }
 
     public void ToggleTower(WallContent wallContent)
     {
-        switch (wallContent.TowerContent.Type)
+        if (wallContent.TowerContent != null)
         {
-            case TowerType.Empty:
-                wallContent.TowerContent = TowerPool.Instance.GetContent(TowerType.Laser);
-                break;
-            case TowerType.Laser:
-                wallContent.TowerContent = TowerPool.Instance.GetContent(TowerType.Empty);
-                break;
+            wallContent.TowerContent = null;
+            return;
         }
+
+        wallContent.TowerContent = TowerPool.Instance.GetContent(TowerType.Laser);
     }
 
     public Tile GetTile(Ray ray)
@@ -190,6 +140,7 @@ public class GameBoard : MonoBehaviour
             //if (x.CheckRange(0, _size.x, Inclusive.Minimum) && y.CheckRange(0, _size.y, Inclusive.Minimum))
             //{
             //Debug.Log(hit.collider.gameObject.name);
+            //hit.col
             return hit.collider.gameObject.GetComponentInParent<WallContent>();
             //}
         }
@@ -202,20 +153,64 @@ public class GameBoard : MonoBehaviour
         foreach (Tile tile in _spawnPoints)
         {
             _searchFrontier.Enqueue(tile);
-            tile.VisibleArrow = false;
         }
         while (_searchFrontier.Any())
         {
             Tile tile = _searchFrontier.Dequeue();
-            if (tile != null && tile.Content.Type != TileContentType.Destination)
+            if (tile != null && tile.Content?.Type != TileContentType.Destination)
             {
                 foreach (var item in tile.NextTilesOnPath)
                 {
                     _searchFrontier.Enqueue(item.Value);
-                    item.Value.VisibleArrow = true;
+                    if (item.Value.Content?.Type != TileContentType.Destination)
+                    {
+                        item.Value.ShowArrow();
+                    }
                 }
             }
         }
+    }
+
+
+    private bool FindPaths()
+    {
+        if (!CheckPath())
+            return false;
+
+        while (_searchFrontier.Any())
+        {
+            Tile tile = _searchFrontier.Dequeue();
+            if (tile != null)
+            {
+                _searchFrontier.Enqueue(tile.GrowPathNorth());
+                _searchFrontier.Enqueue(tile.GrowPathEast());
+                _searchFrontier.Enqueue(tile.GrowPathSouth());
+                _searchFrontier.Enqueue(tile.GrowPathWest());
+            }
+        }
+        foreach (var tile in _tiles)
+        {
+            tile.FindQuicklyPaths();
+        }
+
+        return true;
+    }
+
+    private bool CheckPath()
+    {
+        foreach (var tile in _tiles)
+        {
+            if (tile.Content?.Type == TileContentType.Destination)
+            {
+                tile.BecomeDestination();
+                _searchFrontier.Enqueue(tile);
+            }
+            else
+            {
+                tile.ClearPath();
+            }
+        }
+        return _searchFrontier.Any();
     }
     private bool CheckWall()
     {

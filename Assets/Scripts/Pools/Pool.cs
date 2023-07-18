@@ -1,12 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Pool <K, T, P> : MonoBehaviour
     where K : Enum
-    where T : Content<K>    
-    where P : PoolContainer<T>
+    where T : Content<K> 
+    where P : PoolContainer<T>, new()
 {
+    [SerializeField]
+    private List<Info> objectInfo;
+    [Serializable]
+    private struct Info
+    {
+        public K Type;
+        public T Prefab;
+        public int StartCount;
+    }
+
+    private Dictionary<K, P> poolTiles = new();
     public static Pool<K, T, P> Instance;
     private void Awake()
     {
@@ -16,19 +28,25 @@ public abstract class Pool <K, T, P> : MonoBehaviour
         }
         InitPool();
     }
-    protected abstract void InitPool();
 
-    [Serializable]
-    protected struct Info
+    private void InitPool()
     {
-        public K Type;
-        public T Prefab;
-        public int StartCount;
+        var empty = new GameObject();
+        foreach (var obj in objectInfo)
+        {
+            var conteiner = Instantiate(empty, transform, false);
+            conteiner.name = obj.Type.ToString();
+            poolTiles[obj.Type] = new P();
+            poolTiles[obj.Type].Container = conteiner.transform;
+            for (int i = 0; i < obj.StartCount; i++)
+            {
+                var create = InstantiateObject(obj.Type, conteiner.transform);
+                poolTiles[obj.Type].Objects.Enqueue(create);
+            }
+        }
+        Destroy(empty);
     }
-    [SerializeField]
-    protected List<Info> objectInfo;
-    protected Dictionary<K, P> poolTiles = new();
-    protected T InstantiateObject(K type, Transform parent)
+    private T InstantiateObject(K type, Transform parent)
     {
         var create = Instantiate(objectInfo.Find(x => Enum.Equals(x.Type, type)).Prefab, parent);
         create.gameObject.SetActive(false);
@@ -37,7 +55,7 @@ public abstract class Pool <K, T, P> : MonoBehaviour
     public T GetContent(K type)
     {
         var obj = poolTiles[type].Objects.Count > 0 ?
-            poolTiles[type].Objects.Dequeue() : InstantiateObject(type, poolTiles[type].Conteiner);
+            poolTiles[type].Objects.Dequeue() : InstantiateObject(type, poolTiles[type].Container);
         obj.gameObject.SetActive(true);
         return obj;
     }

@@ -1,4 +1,4 @@
-﻿public enum WorldSids
+﻿public enum WorldSides
 {
     North,
     East,

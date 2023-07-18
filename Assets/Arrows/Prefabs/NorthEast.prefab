@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6214489300863426222}
   - component: {fileID: 8781941459702729556}
   - component: {fileID: 3722781776249362936}
-  - component: {fileID: 3794179353488687367}
+  - component: {fileID: -7986119267257971909}
   m_Layer: 0
   m_Name: NorthEast
   m_TagString: Untagged
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3794179353488687367
+--- !u!114 &-7986119267257971909
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,4 +97,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshFilter: {fileID: 8781941459702729556}
-  _type: 3
+  _type: 2
