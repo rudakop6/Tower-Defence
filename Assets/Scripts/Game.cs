@@ -38,6 +38,8 @@ public class Game : MonoBehaviour
             }
         }
     }
+    [SerializeField]
+    public GameObject PausePanel;
 
     private void Start()
     {
@@ -94,6 +96,16 @@ public class Game : MonoBehaviour
 
 
         selectedTile = _board.GetTile(_touchRay);
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PausePanel.SetActive(true);
+            Time.timeScale = 0;
+            return;
+        }
+
+        if (Time.timeScale == 0)
+            return;
+
         if (Input.GetMouseButtonDown(0))
         {
             _board.CreateBuilding(selectedTile, _buildingType);
