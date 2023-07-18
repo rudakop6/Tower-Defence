@@ -1,14 +1,19 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    const string GAME_SCENE_NAME = "Scenes/GameScene";
+    const string MENu_SCENE_NAME = "Scenes/MenuScene";
     public void PlayGame()
     {
-        SceneManager.LoadScene("Scenes/GameScene", LoadSceneMode.Additive);
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Scenes/GameScene"));
+        SceneManager.LoadScene(GAME_SCENE_NAME, LoadSceneMode.Single);
+    }
+
+    public void OpenMenu()
+    {
+        SceneManager.LoadScene(MENu_SCENE_NAME, LoadSceneMode.Single);
     }
 
     public void QuitGame()
