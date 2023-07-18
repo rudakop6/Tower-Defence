@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -17,6 +16,9 @@ public class Game : MonoBehaviour
     private EnemyCollection _enemies = new EnemyCollection();
     private Ray _touchRay => _camera.ScreenPointToRay(Input.mousePosition);
 
+    [SerializeField]
+    public GameObject PausePanel;
+
     private void Start()
     {
         //Cursor.lockState = CursorLockMode.Locked;
@@ -27,6 +29,13 @@ public class Game : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PausePanel.SetActive(true);
+            Time.timeScale = 0;
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             if (Input.GetKey(KeyCode.LeftAlt))
@@ -48,11 +57,6 @@ public class Game : MonoBehaviour
             SpawnEnemy();
         }
         _enemies.EnemiesUpdate();
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SceneManager.LoadScene("Scenes/MenuScene", LoadSceneMode.Single);
-        }
     }
 
     private void SpawnEnemy()
