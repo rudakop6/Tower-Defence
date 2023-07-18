@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -47,6 +48,11 @@ public class Game : MonoBehaviour
             SpawnEnemy();
         }
         _enemies.EnemiesUpdate();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("Scenes/MenuScene", LoadSceneMode.Single);
+        }
     }
 
     private void SpawnEnemy()
